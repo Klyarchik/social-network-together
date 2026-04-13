@@ -1,10 +1,15 @@
+import 'dart:convert';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 
 import '../widgets/alerts.dart';
 import '../widgets/input.dart';
 import '../widgets/input_password.dart';
 import '../widgets/primary_button.dart';
+import 'package:provider/provider.dart';
 
 class Register extends StatefulWidget {
   const Register({super.key});
@@ -18,6 +23,7 @@ class _RegisterState extends State<Register> {
   final _controllerPassword = TextEditingController();
   final _controllerRepeatPassword = TextEditingController();
   bool _can = false;
+  late final Dio _dio;
 
   void _check() {
     if (_controllerUsername.text.isNotEmpty &&
@@ -42,6 +48,7 @@ class _RegisterState extends State<Register> {
     _controllerPassword.addListener(() {
       _check();
     });
+    _dio = Provider.of<Dio>(context, listen: false);
   }
 
   @override
@@ -87,7 +94,10 @@ class _RegisterState extends State<Register> {
                               GestureDetector(
                                 child: Text(
                                   'Регистрация',
-                                  style: TextStyle(fontSize: 24),
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                    color: Color.fromRGBO(240, 210, 71, 1),
+                                  ),
                                 ),
                               ),
                             ],
@@ -95,7 +105,7 @@ class _RegisterState extends State<Register> {
                           SizedBox(height: 20),
                           Input(
                             controller: _controllerUsername,
-                            hintText: 'Логин',
+                            hintText: 'Username',
                           ),
                           SizedBox(height: 20),
                           InputPassword(
@@ -114,13 +124,42 @@ class _RegisterState extends State<Register> {
                             child: PrimaryButton(
                               text: 'Зарегистрироваться',
                               onPressed: _can
-                                  ? () {
+                                  ? () async {
                                       if (_controllerPassword.text !=
                                           _controllerRepeatPassword.text) {
                                         Alerts.showError(
                                           context,
                                           'Пароли не совпадают',
                                         );
+                                      } else {
+                                        try {
+                                          final response = await _dio.post(
+                                            '/api/user/register',
+                                            data: jsonEncode({
+                                              'username':
+                                                  _controllerUsername.text,
+                                              'password':
+                                                  _controllerPassword.text,
+                                            }),
+                                          );
+                                          final storage =
+                                              FlutterSecureStorage();
+                                          String token = response.data['token'];
+                                          await storage.write(
+                                            key: 'token',
+                                            value: token,
+                                          );
+                                          _dio
+                                                  .options
+                                                  .headers['Authorization'] =
+                                              'Bearer $token';
+                                          context.go('/profile');
+                                        } on DioException catch (e) {
+                                          Alerts.showError(
+                                            context,
+                                            e.response?.data['error'],
+                                          );
+                                        }
                                       }
                                     }
                                   : null,
