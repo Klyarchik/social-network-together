@@ -43,7 +43,7 @@ class _EntranceState extends State<Entrance> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Color.fromRGBO(230, 229, 229, 0.4),
       body: SafeArea(
         child: ListView(
           children: [
@@ -56,41 +56,53 @@ class _EntranceState extends State<Entrance> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        GestureDetector(
-                          child: Text('Вход', style: TextStyle(fontSize: 24)),
-                          onTap: () {},
-                        ),
-                        GestureDetector(
-                          child: Text(
-                            'Регистрация',
-                            style: TextStyle(
-                              fontSize: 24,
-                              color: Colors.black12,
+                    Container(
+                      padding: EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.black12, width: 1),
+                        borderRadius: BorderRadius.circular(12),
+                        color: Colors.white
+                      ),
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              GestureDetector(
+                                child: Text('Вход', style: TextStyle(fontSize: 24)),
+                                onTap: () {},
+                              ),
+                              GestureDetector(
+                                child: Text(
+                                  'Регистрация',
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                    color: Colors.black12,
+                                  ),
+                                ),
+                                onTap: (){
+                                  context.go('/register');
+                                },
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 20),
+                          Input(controller: _controllerUsername, hintText: 'Логин'),
+                          SizedBox(height: 20),
+                          InputPassword(
+                            controller: _controllerPassword,
+                            hintText: 'Пароль',
+                          ),
+                          SizedBox(height: 20),
+                          SizedBox(
+                            height: 50,
+                            width: double.infinity,
+                            child: PrimaryButton(
+                              text: 'Войти',
+                              onPressed: _can ? () {} : null,
                             ),
                           ),
-                          onTap: (){
-                            context.go('/register');
-                          },
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 20),
-                    Input(controller: _controllerUsername, hintText: 'Логин'),
-                    SizedBox(height: 20),
-                    InputPassword(
-                      controller: _controllerPassword,
-                      hintText: 'Пароль',
-                    ),
-                    SizedBox(height: 20),
-                    SizedBox(
-                      height: 50,
-                      width: double.infinity,
-                      child: PrimaryButton(
-                        text: 'Войти',
-                        onPressed: _can ? () {} : null,
+                        ],
                       ),
                     ),
                   ],

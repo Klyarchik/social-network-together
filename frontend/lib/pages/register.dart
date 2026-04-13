@@ -47,7 +47,7 @@ class _RegisterState extends State<Register> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Color.fromRGBO(230, 229, 229, 0.4),
       body: SafeArea(
         child: ListView(
           children: [
@@ -60,55 +60,73 @@ class _RegisterState extends State<Register> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        GestureDetector(
-                          child: Text(
-                            'Вход',
-                            style: TextStyle(
-                              fontSize: 24,
-                              color: Colors.black12,
+                    Container(
+                      padding: EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.black12, width: 1),
+                        borderRadius: BorderRadius.circular(12),
+                        color: Colors.white,
+                      ),
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              GestureDetector(
+                                child: Text(
+                                  'Вход',
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                    color: Colors.black12,
+                                  ),
+                                ),
+                                onTap: () {
+                                  context.go('/entrance');
+                                },
+                              ),
+                              GestureDetector(
+                                child: Text(
+                                  'Регистрация',
+                                  style: TextStyle(fontSize: 24),
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 20),
+                          Input(
+                            controller: _controllerUsername,
+                            hintText: 'Логин',
+                          ),
+                          SizedBox(height: 20),
+                          InputPassword(
+                            controller: _controllerPassword,
+                            hintText: 'Пароль',
+                          ),
+                          SizedBox(height: 20),
+                          InputPassword(
+                            controller: _controllerRepeatPassword,
+                            hintText: 'Повторите пароль',
+                          ),
+                          SizedBox(height: 20),
+                          SizedBox(
+                            height: 50,
+                            width: double.infinity,
+                            child: PrimaryButton(
+                              text: 'Зарегистрироваться',
+                              onPressed: _can
+                                  ? () {
+                                      if (_controllerPassword.text !=
+                                          _controllerRepeatPassword.text) {
+                                        Alerts.showError(
+                                          context,
+                                          'Пароли не совпадают',
+                                        );
+                                      }
+                                    }
+                                  : null,
                             ),
                           ),
-                          onTap: () {
-                            context.go('/entrance');
-                          },
-                        ),
-                        GestureDetector(
-                          child: Text(
-                            'Регистрация',
-                            style: TextStyle(fontSize: 24),
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 20),
-                    Input(controller: _controllerUsername, hintText: 'Логин'),
-                    SizedBox(height: 20),
-                    InputPassword(
-                      controller: _controllerPassword,
-                      hintText: 'Пароль',
-                    ),
-                    SizedBox(height: 20),
-                    InputPassword(
-                      controller: _controllerRepeatPassword,
-                      hintText: 'Повторите пароль',
-                    ),
-                    SizedBox(height: 20),
-                    SizedBox(
-                      height: 50,
-                      width: double.infinity,
-                      child: PrimaryButton(
-                        text: 'Зарегистрироваться',
-                        onPressed: _can
-                            ? () {
-                                if (_controllerPassword.text !=
-                                    _controllerRepeatPassword.text) {
-                                  Alerts.showError(context, 'Пароли не совпадают');
-                                }
-                              }
-                            : null,
+                        ],
                       ),
                     ),
                   ],
