@@ -14,14 +14,14 @@ const register = async (req, res) => {
       return res.status(400).json({ error: "username и password обязательны" });
     }
 
-    if(password.length < 6 || password.length > 25) {
-      return res.status(400).json({ error: "Пароль должен быть не менее 6 символов и не более 25 символов" });
-    }
-
     const existingUser = await prisma.users.findUnique({ where: { username } });
 
     if (existingUser) {
       return res.status(400).json({ error: "Пользователь с таким username уже существует" });
+    }
+
+    if(password.length < 6 || password.length > 25) {
+      return res.status(400).json({ error: "Пароль должен быть не менее 6 символов и не более 25 символов" });
     }
 
     const hashPassword = await bcrypt.hash(password, 10);
@@ -81,7 +81,7 @@ const entrance = async (req, res) => {
 const updateCurrentUserData = async (req, res) => {
   try {
     const userId = req.user.userId;
-    const { username, password } = req.body;
+    const { username } = req.body;
     
     const user = await prisma.users.findUnique({ where: { id: userId } });
     if (!user) {
@@ -95,14 +95,6 @@ const updateCurrentUserData = async (req, res) => {
         return res.status(400).json({ error: "Пользователь с таким username уже существует" });
       }
       user.username = username;
-    }
-
-    // Обновляем пароль
-    if (password) {
-      if (password.length < 6 || password.length > 25) {
-        return res.status(400).json({ error: "Пароль должен быть не менее 6 символов и не более 25 символов" });
-      }
-      user.password = await bcrypt.hash(password, 10);
     }
 
     // Загружаем аватар в MinIO (если передан)
@@ -123,7 +115,6 @@ const updateCurrentUserData = async (req, res) => {
       where: { id: userId },
       data: {
         username: user.username,
-        password: user.password,
         avatar: avatarUrl
       }
     });
@@ -136,6 +127,47 @@ const updateCurrentUserData = async (req, res) => {
 }
 
 
+
+// Изменение пароля пользователя
+const changePassword = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+
+    const { oldPassword, newPassword } = req.body;
+    
+    if (!oldPassword || !newPassword) {
+      return res.status(400).json({ error: "старый и новый пароли обязательны" });
+    }
+
+    const user = await prisma.users.findUnique({ where: { id: userId } });
+    if (!user) {
+      return res.status(404).json({ error: "Пользователь не найден" });
+    }
+
+    const isOldPasswordValid = await bcrypt.compare(oldPassword, user.password);
+    if (!isOldPasswordValid) {
+      return res.status(400).json({ error: "Неверный старый пароль" });
+    }
+
+    if (newPassword.length < 6 || newPassword.length > 25) {
+      return res.status(400).json({ error: "Новый пароль должен быть не менее 6 символов и не более 25 символов" });
+    }
+
+    const newHashedPassword = await bcrypt.hash(newPassword, 10);
+
+    await prisma.users.update({
+      where: { id: userId },
+      data: {
+        password: newHashedPassword
+      }
+    });
+
+    res.status(200).json({ message: "Пароль успешно изменен" });
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+    console.error(error);
+  }
+}
 
 // Получение всех данных текущего пользователя
 const getCurrentUserData = async (req, res) => {
@@ -166,5 +198,6 @@ module.exports = {
   register,
   entrance,
   getCurrentUserData,
-  updateCurrentUserData
+  updateCurrentUserData,
+  changePassword
 };

@@ -5,6 +5,7 @@ const {
   entrance,
   getCurrentUserData,
   updateCurrentUserData,
+  changePassword
 } = require("../controllers/user.controller");
 const multer = require("multer");
 
@@ -26,7 +27,7 @@ router.post(
 );
 
 router.put(
-  "/change",
+  "/changeData",
   authMiddleware,
   upload.single("avatar"),
   /* #swagger.tags = ['Users'] */
@@ -37,12 +38,6 @@ router.put(
     type: 'string',
     required: true,
     description: 'Имя пользователя'
-  } */
-  /* #swagger.parameters['password'] = {
-    in: 'formData',
-    type: 'string',
-    required: true,
-    description: 'Пароль пользователя'
   } */
   /* #swagger.parameters['avatar'] = {
     in: 'formData',
@@ -67,6 +62,13 @@ router.put(
       schema: { type: 'object', properties: { error: { type: 'string', message: 'Internal server error' } } }
   } */
   updateCurrentUserData,
+);
+
+router.put(
+  "/changePassword",
+  authMiddleware,
+  /* #swagger.tags = ['Users'] #swagger.summary = 'Изменение пароля пользователя' */
+  changePassword,
 );
 
 router.get(

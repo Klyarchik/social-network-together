@@ -100,7 +100,7 @@
         }
       }
     },
-    "/api/user/change": {
+    "/api/user/changeData": {
       "put": {
         "tags": [
           "Users"
@@ -124,13 +124,6 @@
             "description": "Имя пользователя"
           },
           {
-            "name": "password",
-            "in": "formData",
-            "type": "string",
-            "required": true,
-            "description": "Пароль пользователя"
-          },
-          {
             "name": "avatar",
             "in": "formData",
             "type": "file",
@@ -144,9 +137,6 @@
               "type": "object",
               "properties": {
                 "username": {
-                  "example": "any"
-                },
-                "password": {
                   "example": "any"
                 }
               }
@@ -291,6 +281,54 @@
                 "name": "main"
               }
             }
+          }
+        }
+      }
+    },
+    "/api/user/changePassword": {
+      "put": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Изменение пароля пользователя",
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "oldPassword": {
+                  "example": "any"
+                },
+                "newPassword": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
