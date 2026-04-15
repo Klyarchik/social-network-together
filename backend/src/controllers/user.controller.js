@@ -1,6 +1,9 @@
 const prisma = require("../client");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const { minioClient, BUCKET_NAME } = require('../configs/minio');
+
+
 
 // Регистрация пользователя
 const register = async (req, res) => {
@@ -26,7 +29,8 @@ const register = async (req, res) => {
     const user = await prisma.users.create({
       data: {
         username,
-        password: hashPassword
+        password: hashPassword,
+        avatar: `http://localhost:9000/${BUCKET_NAME}/default-avatar.jpg`
       }
     });
 
@@ -38,6 +42,7 @@ const register = async (req, res) => {
     console.error(error);
   }
 }
+
 
 
 // Авторизация пользователя
@@ -77,20 +82,22 @@ const updateCurrentUserData = async (req, res) => {
   try {
     const userId = req.user.userId;
     const { username, password } = req.body;
-
+    
     const user = await prisma.users.findUnique({ where: { id: userId } });
-
     if (!user) {
       return res.status(404).json({ error: "Пользователь не найден" });
     }
 
-    const existingUser = await prisma.users.findUnique({ where: { username } });
-    if (existingUser && existingUser.id !== userId) {
-      return res.status(400).json({ error: "Пользователь с таким username уже существует" });
+    // Обновляем username
+    if (username) {
+      const existingUser = await prisma.users.findUnique({ where: { username } });
+      if (existingUser && existingUser.id !== userId) {
+        return res.status(400).json({ error: "Пользователь с таким username уже существует" });
+      }
+      user.username = username;
     }
-    user.username = username;
-    
 
+    // Обновляем пароль
     if (password) {
       if (password.length < 6 || password.length > 25) {
         return res.status(400).json({ error: "Пароль должен быть не менее 6 символов и не более 25 символов" });
@@ -98,9 +105,27 @@ const updateCurrentUserData = async (req, res) => {
       user.password = await bcrypt.hash(password, 10);
     }
 
+    // Загружаем аватар в MinIO (если передан)
+    let avatarUrl = user.avatar;
+    if (req.file) {
+      const fileName = `user-${userId}-${Date.now()}.jpg`;
+      await minioClient.putObject(
+        BUCKET_NAME,
+        fileName,
+        req.file.buffer,
+        req.file.size,
+        { 'Content-Type': req.file.mimetype }
+      );
+      avatarUrl = `http://localhost:9000/${BUCKET_NAME}/${fileName}`;
+    }
+
     await prisma.users.update({
       where: { id: userId },
-      data: user
+      data: {
+        username: user.username,
+        password: user.password,
+        avatar: avatarUrl
+      }
     });
 
     res.status(200).json({ message: "Данные пользователя обновлены" });
@@ -119,7 +144,11 @@ const getCurrentUserData = async (req, res) => {
     
     const user = await prisma.users.findUnique({
       where: { id: userId },
-      select: { id: true, username: true }
+      select: { 
+        id: true,
+        username: true,
+        avatar: true
+      }
     });
 
     if (!user) {
