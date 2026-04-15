@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:frontend/pages/change_password.dart';
 import 'package:frontend/pages/entrance.dart';
 import 'package:frontend/pages/profile.dart';
 import 'package:frontend/pages/register.dart';
@@ -14,7 +15,7 @@ final _router = GoRouter(
     GoRoute(
       path: '/',
       pageBuilder: (context, state) => CustomTransitionPage(
-        child: token == null ?  Entrance() : Profile(),
+        child: token == null ? Entrance() : Profile(),
         transitionsBuilder: (_, __, ___, child) => child,
       ),
     ),
@@ -39,6 +40,13 @@ final _router = GoRouter(
         transitionsBuilder: (_, __, ___, child) => child,
       ),
     ),
+    GoRoute(
+      path: '/change_password',
+      pageBuilder: (context, state) => CustomTransitionPage(
+        child: const ChangePassword(),
+        transitionsBuilder: (_, __, ___, child) => child,
+      ),
+    )
   ],
 );
 
@@ -46,6 +54,9 @@ void main() async {
   final dio = Dio(BaseOptions(baseUrl: 'http://localhost:3000'));
   final storage = FlutterSecureStorage();
   token = await storage.read(key: 'token');
+  if (token != null) {
+    dio.options.headers['Authorization'] = 'Bearer $token';
+  }
   runApp(
     Provider(
       create: (context) => dio,
