@@ -169,6 +169,8 @@ const changePassword = async (req, res) => {
   }
 }
 
+
+
 // Получение всех данных текущего пользователя
 const getCurrentUserData = async (req, res) => {
   try {
@@ -194,10 +196,36 @@ const getCurrentUserData = async (req, res) => {
   }
 }
 
+
+
+//получение всех пользователей
+const getAllUsers = async (req, res) => {
+  try {
+    const users = await prisma.users.findMany({
+      select: { 
+        id: true,
+        username: true,
+        avatar: true
+      }
+    });
+
+    if(users.length === 0) {
+      return res.status(404).json({ error: "Пользователи не найдены" });
+    }
+
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+    console.error(error);
+  }
+}
+
+
 module.exports = {
   register,
   entrance,
   getCurrentUserData,
   updateCurrentUserData,
-  changePassword
+  changePassword,
+  getAllUsers
 };

@@ -5,7 +5,8 @@ const {
   entrance,
   getCurrentUserData,
   updateCurrentUserData,
-  changePassword
+  changePassword,
+  getAllUsers
 } = require("../controllers/user.controller");
 const multer = require("multer");
 
@@ -76,6 +77,12 @@ router.get(
   authMiddleware,
   /* #swagger.tags = ['Users'] #swagger.summary = 'Получение данных текущего пользователя' */
   getCurrentUserData,
+);
+
+router.get(
+  "/all-users",
+  /* #swagger.tags = ['Users'] #swagger.summary = 'Получение всех пользователей' */
+  getAllUsers,
 );
 
 module.exports = router;

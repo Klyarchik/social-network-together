@@ -362,6 +362,26 @@
           }
         }
       }
+    },
+    "/api/user/all-users": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Получение всех пользователей",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
     }
   },
   "security": [
