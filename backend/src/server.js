@@ -35,20 +35,28 @@ const connections = {};
 
 wss.on('connection', (ws, req) => {
 
-  console.log(req.headers);
-  if (!req.headers['authorization']) {
-    ws.send(JSON.stringify({ type: 'error', message: 'Отсутствует "token" в header' }));
+  const fullUrl = new URL(`http://localhost${req.url}`);
+  const token = fullUrl.searchParams.get('token');
+
+  if (!token) {
+    ws.send(JSON.stringify({ type: 'error', message: 'Отсутствует "token" в query' }));
     return ws.close();
   }
 
-  const token = req.headers['authorization']
-
   let id;
 
-  const decodedToken = jwt.verify(token, process.env.JWT_SECRET || "secret");
-  if(decodedToken.userId){
-    id = decodedToken.userId
-    console.log(`id пользователя: ${id}`);
+  try {
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET || "secret");
+    if(decodedToken.userId){
+      id = decodedToken.userId
+      console.log(`id пользователя: ${id}`);
+    } else {
+      ws.send(JSON.stringify({ type: 'error', message: 'Неверный token в query' }));
+      return ws.close();
+    }
+  } catch (error) {
+    ws.send(JSON.stringify({ type: 'error', message: 'Неверный token в query' }));
+    return ws.close();
   }
 
   const from = parseInt(id);
