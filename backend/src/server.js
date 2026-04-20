@@ -25,6 +25,9 @@ const app = express();
 
 const server = http.createServer(app);
 
+// jwt
+const jwt = require('jsonwebtoken');
+
 // WebSocket слушатель
 const wss = new WebSocket.Server({ server: server, path: '/chat' });
 
@@ -32,15 +35,26 @@ const connections = {};
 
 wss.on('connection', (ws, req) => {
 
-  if (!req.headers['id']) {
-    ws.send(JSON.stringify({ type: 'error', message: 'Отсутствует "id" в header' }));
+  console.log(req.headers);
+  if (!req.headers['authorization']) {
+    ws.send(JSON.stringify({ type: 'error', message: 'Отсутствует "token" в header' }));
     return ws.close();
   }
 
-  const from = parseInt(req.headers['id']);
+  const token = req.headers['authorization']
+
+  let id;
+
+  const decodedToken = jwt.verify(token, process.env.JWT_SECRET || "secret");
+  if(decodedToken.userId){
+    id = decodedToken.userId
+    console.log(`id пользователя: ${id}`);
+  }
+
+  const from = parseInt(id);
   connections[from] = ws;
 
-  console.log('Клиент подключился: ', req.headers['id']);
+  console.log('Клиент подключился: ', id);
   ws.send(JSON.stringify({ message: 'Подключение успешно установлено' }));
 
   ws.on('message', async (message) => {
