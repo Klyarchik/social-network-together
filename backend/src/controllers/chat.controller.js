@@ -1,6 +1,9 @@
 const prisma = require('../client');
 const WebSocket = require('ws');
 
+
+
+
 // const wss = new WebSocket.Server({ port: 3000, path: '/chat' });
 
 // const connections = {};
@@ -53,22 +56,3 @@ const WebSocket = require('ws');
 // });
 
 
-const wss = new WebSocket.Server({ port: 3000, path: '/chat' });
-
-const connections = {};
-
-wss.on('connection', (ws) => {
-  connections[ws] = { userId: null };
-
-  ws.on('message', async (message) => {
-    try {
-
-      console.log('Получено сообщение: ', message);
-      const data = JSON.parse(message);
-
-    } catch (error) {
-      console.error('Ошибка при обработке сообщения: ', error);
-      ws.send(JSON.stringify({ type: 'error', message: 'Internal server error' }));
-    }
-  })
-})

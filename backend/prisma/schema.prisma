@@ -13,3 +13,11 @@ model users {
   password String  @db.VarChar(255)
   avatar   String? @db.VarChar(255)
 }
+
+model chat_messages {
+  id_message Int       @id @default(autoincrement())
+  user_from  Int
+  user_to    Int
+  text       String
+  created_at DateTime? @default(now()) @db.Timestamp(6)
+}

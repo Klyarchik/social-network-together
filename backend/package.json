@@ -6,8 +6,9 @@
   "scripts": {
     "prisma": "prisma",
     "swagger": "node src/swagger.js",
-    "swagger:watch": "nodemon --watch ./src/server.js --exec \"npm run swagger\"",
-    "dev": "nodemon src/server.js",
+    "swagger:watch": "nodemon --watch ./src/routes --exec \"npm run swagger\"",
+    "dev": "npx kill-port 3000 3030 && nodemon src/server.js",
+    "ws": "nodemon src/controllers/chat.controller.js",
     "dev:swagger": "concurrently \"npm run swagger:watch\" \"npm run dev\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
