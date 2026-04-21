@@ -26,6 +26,9 @@ class _InputPasswordState extends State<InputPassword> {
         controller: widget.controller,
         decoration: InputDecoration(
           hintText: widget.hintText,
+          hintStyle: TextStyle(
+              color: Colors.black12
+          ),
           enabledBorder: OutlineInputBorder(
             borderSide: BorderSide(color: Colors.black12, width: 1),
             borderRadius: BorderRadius.circular(12),

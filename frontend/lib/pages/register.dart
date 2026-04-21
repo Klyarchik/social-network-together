@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:go_router/go_router.dart';
 
 import '../widgets/alerts.dart';
 import '../widgets/input.dart';
@@ -88,7 +87,7 @@ class _RegisterState extends State<Register> {
                                   ),
                                 ),
                                 onTap: () {
-                                  context.go('/entrance');
+                                  Navigator.pushNamed(context, '/entrance');
                                 },
                               ),
                               GestureDetector(
@@ -153,7 +152,7 @@ class _RegisterState extends State<Register> {
                                                   .options
                                                   .headers['Authorization'] =
                                               'Bearer $token';
-                                          context.go('/profile');
+                                          Navigator.pushNamed(context, '/profile');
                                         } on DioException catch (e) {
                                           Alerts.showError(
                                             context,

@@ -5,7 +5,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:frontend/widgets/input.dart';
 import 'package:frontend/widgets/input_password.dart';
 import 'package:frontend/widgets/primary_button.dart';
-import 'package:go_router/go_router.dart';
 import 'package:dio/dio.dart';
 import 'package:provider/provider.dart';
 
@@ -97,7 +96,7 @@ class _EntranceState extends State<Entrance> {
                                   ),
                                 ),
                                 onTap: () {
-                                  context.go('/register');
+                                  Navigator.pushNamed(context, '/register');
                                 },
                               ),
                             ],
@@ -138,7 +137,7 @@ class _EntranceState extends State<Entrance> {
                                         );
                                         _dio.options.headers['Authorization'] =
                                             'Bearer $token';
-                                        context.go('/profile');
+                                        Navigator.pushNamed(context, '/profile');
                                       } on DioException catch (e) {
                                         Alerts.showError(
                                           context,

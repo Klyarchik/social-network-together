@@ -2,53 +2,14 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:frontend/pages/change_password.dart';
+import 'package:frontend/pages/chat.dart';
 import 'package:frontend/pages/entrance.dart';
 import 'package:frontend/pages/profile.dart';
 import 'package:frontend/pages/register.dart';
-import 'package:go_router/go_router.dart';
+import 'package:frontend/pages/chats.dart';
 import 'package:provider/provider.dart';
 
 String? token;
-
-final _router = GoRouter(
-  routes: [
-    GoRoute(
-      path: '/',
-      pageBuilder: (context, state) => CustomTransitionPage(
-        child: token == null ? Entrance() : Profile(),
-        transitionsBuilder: (_, __, ___, child) => child,
-      ),
-    ),
-    GoRoute(
-      path: '/register',
-      pageBuilder: (context, state) => CustomTransitionPage(
-        child: const Register(),
-        transitionsBuilder: (_, __, ___, child) => child,
-      ),
-    ),
-    GoRoute(
-      path: '/entrance',
-      pageBuilder: (context, state) => CustomTransitionPage(
-        child: const Entrance(),
-        transitionsBuilder: (_, __, ___, child) => child,
-      ),
-    ),
-    GoRoute(
-      path: '/profile',
-      pageBuilder: (context, state) => CustomTransitionPage(
-        child: const Profile(),
-        transitionsBuilder: (_, __, ___, child) => child,
-      ),
-    ),
-    GoRoute(
-      path: '/change_password',
-      pageBuilder: (context, state) => CustomTransitionPage(
-        child: const ChangePassword(),
-        transitionsBuilder: (_, __, ___, child) => child,
-      ),
-    )
-  ],
-);
 
 void main() async {
   final dio = Dio(BaseOptions(baseUrl: 'http://localhost:3000'));
@@ -60,7 +21,54 @@ void main() async {
   runApp(
     Provider(
       create: (context) => dio,
-      child: MaterialApp.router(routerConfig: _router),
+      child: MaterialApp(
+        onGenerateRoute: (settings) {
+          switch (settings.name) {
+            case '/':
+              if (token == null) {
+                return PageRouteBuilder(
+                  pageBuilder: (_, __, ___) => Entrance(),
+                );
+              } else {
+                return PageRouteBuilder(
+                  pageBuilder: (_, __, ___) => Profile(),
+                  transitionDuration: Duration.zero,
+                );
+              }
+            case '/entrance':
+              return PageRouteBuilder(
+                pageBuilder: (_, __, ___) => Entrance(),
+                transitionDuration: Duration.zero,
+              );
+            case '/register':
+              return PageRouteBuilder(
+                pageBuilder: (_, __, ___) => Register(),
+                transitionDuration: Duration.zero,
+              );
+            case '/profile':
+              return PageRouteBuilder(
+                pageBuilder: (_, __, ___) => Profile(),
+                transitionDuration: Duration.zero,
+              );
+            case '/change_password':
+              return PageRouteBuilder(
+                pageBuilder: (_, __, ___) => ChangePassword(),
+                transitionDuration: Duration.zero,
+              );
+            case '/chats':
+              return PageRouteBuilder(
+                pageBuilder: (_, __, ___) => Chats(),
+                transitionDuration: Duration.zero,
+              );
+            case '/chat':
+              final args = settings.arguments as Map;
+              return PageRouteBuilder(
+                  pageBuilder: (_, __, ___) => Chat(userId: args['userId']),
+                  transitionDuration: Duration.zero);
+          }
+          return null;
+        },
+      ),
     ),
   );
 }

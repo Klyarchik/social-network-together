@@ -2,7 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/widgets/input_password.dart';
 import 'package:frontend/widgets/primary_button.dart';
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../widgets/alerts.dart';
@@ -98,7 +97,7 @@ class _ChangePasswordState extends State<ChangePassword> {
                                     'oldPassword': _controllerOldPassword.text,
                                     'newPassword': _controllerNewPassword.text
                                   });
-                                  context.pop();
+                                  Navigator.pop(context);
                                 } on DioException catch (e){
                                   Alerts.showError(context, e.response?.data['error']);
                                 }

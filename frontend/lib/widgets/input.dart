@@ -16,7 +16,12 @@ class Input extends StatelessWidget {
       child: TextField(
         controller: controller,
         decoration: InputDecoration(
+          filled: true,
+          fillColor: Colors.white,
           hintText: hintText,
+          hintStyle: TextStyle(
+            color: Colors.black12
+          ),
           enabledBorder: OutlineInputBorder(
             borderSide: BorderSide(
               color: Colors.black12,

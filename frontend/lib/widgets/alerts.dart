@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 class Alerts {
   static void showError(BuildContext context, String text){
@@ -11,7 +10,7 @@ class Alerts {
         content: Text(text),
         actions: [
           TextButton(onPressed: (){
-            context.pop();
+            Navigator.pop(context);
           }, child: Text('ок'),
           style: TextButton.styleFrom(
             foregroundColor: Color.fromRGBO(240, 210, 71, 1)

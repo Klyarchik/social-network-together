@@ -4,9 +4,9 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:frontend/widgets/alerts.dart';
+import 'package:frontend/widgets/custom_drawer.dart';
 import 'package:frontend/widgets/input.dart';
 import 'package:frontend/widgets/primary_button.dart';
-import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
@@ -65,46 +65,7 @@ class _ProfileState extends State<Profile> {
               backgroundColor: Colors.transparent,
               surfaceTintColor: Colors.transparent,
             ),
-            drawer: Drawer(
-              backgroundColor: Colors.white,
-              child: Container(
-                margin: EdgeInsets.only(left: 20),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 20),
-                    GestureDetector(
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.person,
-                            color: Color.fromRGBO(240, 210, 71, 1),
-                          ),
-                          SizedBox(width: 10),
-                          Text(
-                            'Профиль',
-                            style: TextStyle(
-                              color: Color.fromRGBO(240, 210, 71, 1),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    GestureDetector(
-                      child: Row(
-                        children: [
-                          Icon(Icons.chat_bubble, color: Colors.black12),
-                          SizedBox(width: 10),
-                          Text('Чаты', style: TextStyle(color: Colors.black12)),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            drawer: CustomDrawer(index: 0),
             body:
             SafeArea(
               child: SizedBox(
@@ -139,7 +100,7 @@ class _ProfileState extends State<Profile> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       IconButton(
-                                        onPressed: () async {},
+                                        onPressed: null,
                                         icon: Icon(
                                           Icons.exit_to_app,
                                           color: Colors.white,
@@ -182,7 +143,7 @@ class _ProfileState extends State<Profile> {
                                           final storage =
                                               FlutterSecureStorage();
                                           await storage.delete(key: 'token');
-                                          context.go('/entrance');
+                                          Navigator.pushNamed(context, '/entrance');
                                         },
                                         icon: Icon(
                                           Icons.exit_to_app,
@@ -202,7 +163,7 @@ class _ProfileState extends State<Profile> {
                                   SizedBox(height: 10),
                                   TextButton(
                                     onPressed: () {
-                                      context.push('/change_password');
+                                      Navigator.pushNamed(context, '/change_password');
                                     },
                                     child: Text('Изменить пароль'),
                                     style: TextButton.styleFrom(
