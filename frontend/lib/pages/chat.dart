@@ -22,6 +22,7 @@ class _ChatState extends State<Chat> {
   List _messages = [];
   final _storage = FlutterSecureStorage();
   late final WebSocketChannel channel;
+  final ScrollController _scrollController = ScrollController();
   bool _isLoaded = false;
   late final Dio _dio;
   late final _userTo;
@@ -39,17 +40,16 @@ class _ChatState extends State<Chat> {
         'ws://localhost:3000/chat',
       ).replace(queryParameters: {'token': token}),
     );
-    final responseMessages = await _dio.get('/api/chat/all-mesagges', queryParameters: {
-      'idChooseUser': widget.userId
-    });
+    final responseMessages = await _dio.get(
+      '/api/chat/all-mesagges',
+      queryParameters: {'idChooseUser': widget.userId},
+    );
     _messages = responseMessages.data['allMessages'];
     channel.stream.listen((message) {
       final data = jsonDecode(message);
-      print(data);
       if (data['type'] == 'message') {
-        print('aaa');
         if (data['message']['user_from'] == widget.userId ||
-            data['message']['user_to'] == widget.userId){
+            data['message']['user_to'] == widget.userId) {
           setState(() {
             _messages.add(data['message']);
           });
@@ -59,6 +59,9 @@ class _ChatState extends State<Chat> {
     setState(() {
       _isLoaded = true;
     });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+    });
   }
 
   @override
@@ -66,7 +69,7 @@ class _ChatState extends State<Chat> {
     // TODO: implement initState
     super.initState();
     _dio = Provider.of<Dio>(context, listen: false);
-    _controller.addListener((){
+    _controller.addListener(() {
       setState(() {
         _can = _controller.text.isNotEmpty;
       });
@@ -108,9 +111,7 @@ class _ChatState extends State<Chat> {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          SizedBox(
-                            width: 10,
-                          ),
+                          SizedBox(width: 10),
                           Container(
                             width: 40,
                             height: 40,
@@ -119,11 +120,12 @@ class _ChatState extends State<Chat> {
                               border: Border.all(
                                 color: Colors.black26,
                                 width: 1,
-                              )
+                              ),
                             ),
                             child: ClipRRect(
-                                borderRadius: BorderRadius.circular(40),
-                                child: Image.network(_userTo['avatar'])),
+                              borderRadius: BorderRadius.circular(40),
+                              child: Image.network(_userTo['avatar']),
+                            ),
                           ),
                           SizedBox(width: 10),
                           Text(_userTo['username']),
@@ -136,9 +138,10 @@ class _ChatState extends State<Chat> {
                         // constraints: BoxConstraints(maxWidth: 700),
                         // margin: EdgeInsets.symmetric(horizontal: 20),
                         child: ListView.builder(
+                          cacheExtent: double.infinity,
+                          controller: _scrollController,
                           itemCount: _messages.length,
                           itemBuilder: (context, i) {
-                            print(_messages[i]['text']);
                             return Center(
                               child: Container(
                                 width: double.infinity,
@@ -146,18 +149,17 @@ class _ChatState extends State<Chat> {
                                 margin: EdgeInsets.symmetric(horizontal: 20),
                                 child: Row(
                                   mainAxisAlignment:
-                                      _messages[i]['user_from'] ==
-                                          widget.userId
+                                      _messages[i]['user_from'] == widget.userId
                                       ? MainAxisAlignment.start
                                       : MainAxisAlignment.end,
                                   children: [
                                     Flexible(
                                       child: LayoutBuilder(
                                         builder: (context, constrains) {
-                                          print(constrains.maxWidth);
                                           return Container(
                                             constraints: BoxConstraints(
-                                              maxWidth: constrains.maxWidth * 0.8,
+                                              maxWidth:
+                                                  constrains.maxWidth * 0.8,
                                             ),
                                             decoration: BoxDecoration(
                                               color:
@@ -170,9 +172,8 @@ class _ChatState extends State<Chat> {
                                                       71,
                                                       1,
                                                     ),
-                                              borderRadius: BorderRadius.circular(
-                                                15,
-                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(15),
                                             ),
                                             padding: EdgeInsets.symmetric(
                                               horizontal: 30,
@@ -181,9 +182,7 @@ class _ChatState extends State<Chat> {
                                             margin: EdgeInsets.symmetric(
                                               vertical: 5,
                                             ),
-                                            child: Text(
-                                              _messages[i]['text'],
-                                            ),
+                                            child: Text(_messages[i]['text']),
                                           );
                                         },
                                       ),
@@ -211,16 +210,19 @@ class _ChatState extends State<Chat> {
                           ),
                           SizedBox(width: 10),
                           IconButton(
-                            onPressed: _can ? () {
-                              channel.sink.add(
-                                jsonEncode({
-                                  'text': _controller.text,
-                                  'to': widget.userId,
-                                }),
-
-                              );
-                              _controller.text = '';
-                            } :  null,
+                            onPressed: _can
+                                ? () async {
+                                    channel.sink.add(
+                                      jsonEncode({
+                                        'text': _controller.text,
+                                        'to': widget.userId,
+                                      }),
+                                    );
+                                    _controller.text = '';
+                                    await Future.delayed(Duration(milliseconds: 300));
+                                    _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+                                  }
+                                : null,
                             icon: Icon(Icons.send),
                           ),
                         ],
