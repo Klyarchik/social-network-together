@@ -42,8 +42,9 @@ class _ChatState extends State<Chat> {
       final data = jsonDecode(message);
       print(data);
       if (data['type'] == 'message') {
-        if (data['message']['from'] == widget.userId ||
-            data['message']['to'] == widget.userId){
+        print('aaa');
+        if (data['message']['user_from'] == widget.userId ||
+            data['message']['user_to'] == widget.userId){
           setState(() {
             _messages.add(data);
           });
@@ -127,12 +128,13 @@ class _ChatState extends State<Chat> {
                         child: ListView.builder(
                           itemCount: _messages.length,
                           itemBuilder: (context, i) {
+                            print(_messages[i]['message']['text']);
                             return Container(
                               width: double.infinity,
                               constraints: BoxConstraints(maxWidth: 700),
                               child: Row(
                                 mainAxisAlignment:
-                                    _messages[i]['message']['from'] ==
+                                    _messages[i]['message']['user_from'] ==
                                         widget.userId
                                     ? MainAxisAlignment.start
                                     : MainAxisAlignment.end,
@@ -147,7 +149,7 @@ class _ChatState extends State<Chat> {
                                           ),
                                           decoration: BoxDecoration(
                                             color:
-                                                _messages[i]['message']['from'] ==
+                                                _messages[i]['message']['user_from'] ==
                                                     widget.userId
                                                 ? Colors.white
                                                 : Color.fromRGBO(
