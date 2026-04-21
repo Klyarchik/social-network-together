@@ -86,7 +86,7 @@ router.get(
   getAllUsers,
 );
 
-router.post(
+router.get(
   "/user-by-id",
   /* #swagger.tags = ['Users'] #swagger.summary = 'Получение пользователя по id' */
   getUserById,
