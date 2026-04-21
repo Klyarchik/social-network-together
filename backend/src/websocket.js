@@ -79,9 +79,9 @@ const initWebSocket = (server) => {
         const messageData = {
           type: "message",
           message: {
-            id: chatMessage.id,
-            from: chatMessage.user_from,
-            to: chatMessage.user_to,
+            id_message: chatMessage.id,
+            user_from: chatMessage.user_from,
+            user_to: chatMessage.user_to,
             text: chatMessage.text,
             createdAt: chatMessage.created_at,
           },
