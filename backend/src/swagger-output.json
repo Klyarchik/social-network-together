@@ -384,7 +384,7 @@
       }
     },
     "/api/user/user-by-id": {
-      "post": {
+      "get": {
         "tags": [
           "Users"
         ],
@@ -414,7 +414,7 @@
       }
     },
     "/api/chat/all-mesagges": {
-      "post": {
+      "get": {
         "tags": [
           "Chat"
         ],

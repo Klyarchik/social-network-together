@@ -74,7 +74,7 @@ const initWebSocket = (server) => {
         }
 
         // Отправляем отправителю подтверждение (не дублируем само сообщение)
-        ws.send(JSON.stringify({ type: 'Отправлено', messageId: chatMessage.id }));
+        ws.send(JSON.stringify({ type: 'Отправлено', message: messageData }));
       } catch (err) {
         console.error('Ошибка при обработке сообщения:', err);
         ws.send(JSON.stringify({ type: 'error', message: 'Internal server error' }));
