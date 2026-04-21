@@ -25,6 +25,7 @@ class _ChatState extends State<Chat> {
   bool _isLoaded = false;
   late final Dio _dio;
   late final _userTo;
+  bool _can = false;
 
   Future<void> _init() async {
     String? token = await _storage.read(key: 'token');
@@ -38,6 +39,10 @@ class _ChatState extends State<Chat> {
         'ws://localhost:3000/chat',
       ).replace(queryParameters: {'token': token}),
     );
+    final responseMessages = await _dio.get('/api/chat/all-mesagges', queryParameters: {
+      'idChooseUser': widget.userId
+    });
+    _messages = responseMessages.data['allMessages'];
     channel.stream.listen((message) {
       final data = jsonDecode(message);
       print(data);
@@ -46,7 +51,7 @@ class _ChatState extends State<Chat> {
         if (data['message']['user_from'] == widget.userId ||
             data['message']['user_to'] == widget.userId){
           setState(() {
-            _messages.add(data);
+            _messages.add(data['message']);
           });
         }
       }
@@ -61,6 +66,11 @@ class _ChatState extends State<Chat> {
     // TODO: implement initState
     super.initState();
     _dio = Provider.of<Dio>(context, listen: false);
+    _controller.addListener((){
+      setState(() {
+        _can = _controller.text.isNotEmpty;
+      });
+    });
     _init();
   }
 
@@ -123,60 +133,63 @@ class _ChatState extends State<Chat> {
                     Expanded(
                       child: Container(
                         width: double.infinity,
-                        constraints: BoxConstraints(maxWidth: 700),
-                        margin: EdgeInsets.symmetric(horizontal: 20),
+                        // constraints: BoxConstraints(maxWidth: 700),
+                        // margin: EdgeInsets.symmetric(horizontal: 20),
                         child: ListView.builder(
                           itemCount: _messages.length,
                           itemBuilder: (context, i) {
-                            print(_messages[i]['message']['text']);
-                            return Container(
-                              width: double.infinity,
-                              constraints: BoxConstraints(maxWidth: 700),
-                              child: Row(
-                                mainAxisAlignment:
-                                    _messages[i]['message']['user_from'] ==
-                                        widget.userId
-                                    ? MainAxisAlignment.start
-                                    : MainAxisAlignment.end,
-                                children: [
-                                  Flexible(
-                                    child: LayoutBuilder(
-                                      builder: (context, constrains) {
-                                        print(constrains.maxWidth);
-                                        return Container(
-                                          constraints: BoxConstraints(
-                                            maxWidth: constrains.maxWidth * 0.8,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color:
-                                                _messages[i]['message']['user_from'] ==
-                                                    widget.userId
-                                                ? Colors.white
-                                                : Color.fromRGBO(
-                                                    240,
-                                                    210,
-                                                    71,
-                                                    1,
-                                                  ),
-                                            borderRadius: BorderRadius.circular(
-                                              15,
+                            print(_messages[i]['text']);
+                            return Center(
+                              child: Container(
+                                width: double.infinity,
+                                constraints: BoxConstraints(maxWidth: 700),
+                                margin: EdgeInsets.symmetric(horizontal: 20),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      _messages[i]['user_from'] ==
+                                          widget.userId
+                                      ? MainAxisAlignment.start
+                                      : MainAxisAlignment.end,
+                                  children: [
+                                    Flexible(
+                                      child: LayoutBuilder(
+                                        builder: (context, constrains) {
+                                          print(constrains.maxWidth);
+                                          return Container(
+                                            constraints: BoxConstraints(
+                                              maxWidth: constrains.maxWidth * 0.8,
                                             ),
-                                          ),
-                                          padding: EdgeInsets.symmetric(
-                                            horizontal: 30,
-                                            vertical: 10,
-                                          ),
-                                          margin: EdgeInsets.symmetric(
-                                            vertical: 5,
-                                          ),
-                                          child: Text(
-                                            _messages[i]['message']['text'],
-                                          ),
-                                        );
-                                      },
+                                            decoration: BoxDecoration(
+                                              color:
+                                                  _messages[i]['user_from'] ==
+                                                      widget.userId
+                                                  ? Colors.white
+                                                  : Color.fromRGBO(
+                                                      240,
+                                                      210,
+                                                      71,
+                                                      1,
+                                                    ),
+                                              borderRadius: BorderRadius.circular(
+                                                15,
+                                              ),
+                                            ),
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal: 30,
+                                              vertical: 10,
+                                            ),
+                                            margin: EdgeInsets.symmetric(
+                                              vertical: 5,
+                                            ),
+                                            child: Text(
+                                              _messages[i]['text'],
+                                            ),
+                                          );
+                                        },
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             );
                           },
@@ -198,14 +211,16 @@ class _ChatState extends State<Chat> {
                           ),
                           SizedBox(width: 10),
                           IconButton(
-                            onPressed: () {
+                            onPressed: _can ? () {
                               channel.sink.add(
                                 jsonEncode({
                                   'text': _controller.text,
                                   'to': widget.userId,
                                 }),
+
                               );
-                            },
+                              _controller.text = '';
+                            } :  null,
                             icon: Icon(Icons.send),
                           ),
                         ],
