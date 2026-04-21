@@ -6,7 +6,8 @@ const {
   getCurrentUserData,
   updateCurrentUserData,
   changePassword,
-  getAllUsers
+  getAllUsers,
+  getUserById
 } = require("../controllers/user.controller");
 const multer = require("multer");
 
@@ -84,5 +85,12 @@ router.get(
   /* #swagger.tags = ['Users'] #swagger.summary = 'Получение всех пользователей' */
   getAllUsers,
 );
+
+router.post(
+  "/user-by-id",
+  /* #swagger.tags = ['Users'] #swagger.summary = 'Получение пользователя по id' */
+  getUserById,
+);
+
 
 module.exports = router;

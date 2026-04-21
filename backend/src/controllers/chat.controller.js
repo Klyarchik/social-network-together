@@ -1,58 +1,30 @@
 const prisma = require('../client');
-const WebSocket = require('ws');
 
+const getMessagesWithChooseUser = async (req, res) => {
+  try {
+    const idChooseUser = req.query.idChooseUser;
 
+    if(!idChooseUser) {
+      return res.status(404).json({ error: "id второго пользователя обязателен" })
+    }
 
+    const allMessages = await prisma.chat_messages.findMany({
+      where: {
+        OR: [
+          { user_from: req.user.userId, user_to: Number(idChooseUser) },
+          { user_from: Number(idChooseUser), user_to: req.user.userId }
+        ]
+      },
+      orderBy: { created_at: 'asc' }
+    });
 
-// const wss = new WebSocket.Server({ port: 3000, path: '/chat' });
+    res.status(200).json({ allMessages: allMessages })
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+}
 
-// const connections = {};
-
-// wss.on('connection', (ws) => {
-//   connections[ws] = { userId: null };
-
-//   ws.on('message', async (message) => {
-//     try {
-//       const data = JSON.parse(message);
-//       if (data.type === 'auth') {
-//         connections[ws].userId = data.userId;
-//         ws.send(JSON.stringify({ type: 'auth', success: true }));
-//       } else if (data.type === 'message') {
-//         const { userId } = connections[ws];
-//         if (!userId) {
-//           return ws.send(JSON.stringify({ type: 'error', message: 'Unauthorized' }));
-//         }
-//         const { content } = data;
-//         const chatMessage = await prisma.chatMessages.create({
-//           data: {
-//             userId,
-//             content,
-//           },
-//         });
-//         const messageData = {
-//           type: 'message',
-//           message: {
-//             id: chatMessage.id,
-//             userId,
-//             content,
-//             createdAt: chatMessage.createdAt,
-//           },
-//         };
-//         Object.keys(connections).forEach((client) => {
-//           if (connections[client].userId) {
-//             client.send(JSON.stringify(messageData));
-//           }
-//         });
-//       }
-//     } catch (error) {
-//       console.error('Error processing message:', error);
-//       ws.send(JSON.stringify({ type: 'error', message: 'Internal server error' }));
-//     }
-//   });
-
-//   ws.on('close', () => {
-//     delete connections[ws];
-//   });
-// });
-
-
+module.exports = {
+  getMessagesWithChooseUser
+}

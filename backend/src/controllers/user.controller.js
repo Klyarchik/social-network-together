@@ -221,11 +221,41 @@ const getAllUsers = async (req, res) => {
 }
 
 
+const getUserById = async (req, res) => {
+  try {
+    const id = Number(req.query.id);
+
+    if(!id) {
+      return res.status(400).json({ error: "id пользователя обязателен" });
+    }
+
+    const user = await prisma.users.findUnique({
+      where: {id},
+      select: {
+        id: true,
+        username: true,
+        avatar: true
+      }
+    })
+
+    if(!user){
+      return res.status(404).json({ error: "Пользователь с таким id не существует" });
+    }
+
+    res.status(200).json({ userById: user });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+
 module.exports = {
   register,
   entrance,
   getCurrentUserData,
   updateCurrentUserData,
   changePassword,
-  getAllUsers
+  getAllUsers,
+  getUserById
 };
