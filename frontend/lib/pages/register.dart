@@ -53,7 +53,7 @@ class _RegisterState extends State<Register> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromRGBO(230, 229, 229, 0.4),
+      backgroundColor: Color.fromRGBO(245, 245, 245, 1.0),
       body: SafeArea(
         child: ListView(
           children: [

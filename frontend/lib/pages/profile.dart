@@ -60,7 +60,7 @@ class _ProfileState extends State<Profile> {
   Widget build(BuildContext context) {
     return _isLoaded
         ? Scaffold(
-            backgroundColor: Color.fromRGBO(230, 229, 229, 0.4),
+            backgroundColor: Color.fromRGBO(245, 245, 245, 1.0),
             appBar: AppBar(
               backgroundColor: Colors.transparent,
               surfaceTintColor: Colors.transparent,

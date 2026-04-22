@@ -43,7 +43,7 @@ class _ChangePasswordState extends State<ChangePassword> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromRGBO(230, 229, 229, 0.4),
+      backgroundColor: Color.fromRGBO(245, 245, 245, 1.0),
       appBar: MediaQuery.of(context).size.width < 540 ? AppBar(
         backgroundColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,

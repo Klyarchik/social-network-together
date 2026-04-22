@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:frontend/widgets/custom_drawer.dart';
@@ -37,7 +38,9 @@ class _ChatState extends State<Chat> {
     _userTo = responseTo.data['userById'];
     channel = WebSocketChannel.connect(
       Uri.parse(
-        'ws://localhost:3000/chat',
+        defaultTargetPlatform != TargetPlatform.android
+            ? 'ws://localhost:3000/chat'
+            : 'ws://10.0.2.2:3000/chat',
       ).replace(queryParameters: {'token': token}),
     );
     final responseMessages = await _dio.get(
@@ -81,7 +84,7 @@ class _ChatState extends State<Chat> {
   Widget build(BuildContext context) {
     return _isLoaded
         ? Scaffold(
-            backgroundColor: Color.fromRGBO(230, 229, 229, 0.4),
+            backgroundColor: Color.fromRGBO(245, 245, 245, 1.0),
             appBar: MediaQuery.of(context).size.width < 540
                 ? AppBar(
                     backgroundColor: Colors.transparent,
@@ -142,32 +145,47 @@ class _ChatState extends State<Chat> {
                           controller: _scrollController,
                           itemCount: _messages.length,
                           itemBuilder: (context, i) {
-                            final listDateTime = _messages[i]['created_at'].split('T');
+                            final listDateTime = _messages[i]['created_at']
+                                .split('T');
                             final listTime = listDateTime[1].split(':');
                             return Center(
                               child: Column(
                                 children: [
                                   if (i != 0)
-                                    if (_messages[i - 1]['created_at'].substring(0, 10) != _messages[i]['created_at'].substring(0, 10))
+                                    if (_messages[i - 1]['created_at']
+                                            .substring(0, 10) !=
+                                        _messages[i]['created_at'].substring(
+                                          0,
+                                          10,
+                                        ))
                                       Center(
                                         child: Container(
                                           padding: EdgeInsets.symmetric(
                                             vertical: 2.5,
-                                            horizontal: 10
+                                            horizontal: 10,
                                           ),
-                                            decoration: BoxDecoration(
-                                              color: Colors.black26.withAlpha(30),
-                                              borderRadius: BorderRadius.circular(15)
+                                          decoration: BoxDecoration(
+                                            color: Colors.black26.withAlpha(30),
+                                            borderRadius: BorderRadius.circular(
+                                              15,
                                             ),
-                                            child: Text(_messages[i]['created_at'].substring(0, 10))),
+                                          ),
+                                          child: Text(
+                                            _messages[i]['created_at']
+                                                .substring(0, 10),
+                                          ),
+                                        ),
                                       ),
                                   Container(
                                     width: double.infinity,
                                     constraints: BoxConstraints(maxWidth: 700),
-                                    margin: EdgeInsets.symmetric(horizontal: 20),
+                                    margin: EdgeInsets.symmetric(
+                                      horizontal: 20,
+                                    ),
                                     child: Row(
                                       mainAxisAlignment:
-                                          _messages[i]['user_from'] == widget.userId
+                                          _messages[i]['user_from'] ==
+                                              widget.userId
                                           ? MainAxisAlignment.start
                                           : MainAxisAlignment.end,
                                       children: [
@@ -202,12 +220,16 @@ class _ChatState extends State<Chat> {
                                                   // horizontal: 30
                                                 ),
                                                 child: Column(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
                                                   children: [
                                                     Text(_messages[i]['text']),
-                                                    Text('${listTime[0]}:${listTime[1]}', style: TextStyle(
-                                                      fontSize: 10
-                                                    ),)
+                                                    Text(
+                                                      '${listTime[0]}:${listTime[1]}',
+                                                      style: TextStyle(
+                                                        fontSize: 10,
+                                                      ),
+                                                    ),
                                                   ],
                                                 ),
                                               );
@@ -248,8 +270,14 @@ class _ChatState extends State<Chat> {
                                       }),
                                     );
                                     _controller.text = '';
-                                    await Future.delayed(Duration(milliseconds: 300));
-                                    _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+                                    await Future.delayed(
+                                      Duration(milliseconds: 300),
+                                    );
+                                    _scrollController.jumpTo(
+                                      _scrollController
+                                          .position
+                                          .maxScrollExtent,
+                                    );
                                   }
                                 : null,
                             icon: Icon(Icons.send),

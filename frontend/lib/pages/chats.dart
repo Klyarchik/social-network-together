@@ -44,7 +44,7 @@ class _ChatsState extends State<Chats> {
   Widget build(BuildContext context) {
     return _isLoaded
         ? Scaffold(
-            backgroundColor: Color.fromRGBO(230, 229, 229, 0.4),
+            backgroundColor: Color.fromRGBO(245, 245, 245, 1.0),
             appBar: AppBar(
               backgroundColor: Colors.transparent,
               surfaceTintColor: Colors.transparent,
@@ -58,7 +58,7 @@ class _ChatsState extends State<Chats> {
                     borderRadius: BorderRadius.circular(30),
                     color: Colors.white,
                   ),
-                  margin: EdgeInsets.only(bottom: 20),
+                  margin: EdgeInsets.only(bottom: 20, left: 20, right: 20),
                   padding: EdgeInsets.all(20),
                   child: ListView.builder(
                     itemCount: _users.length,

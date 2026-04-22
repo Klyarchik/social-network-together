@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "175368234640",
+    "project_id": "social-network-together",
+    "storage_bucket": "social-network-together.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:175368234640:android:a06f737901894275d99a15",
+        "android_client_info": {
+          "package_name": "com.example.frontend"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDywvOuGMsZ0v6FdYx5isf-Id1E90FlBc0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

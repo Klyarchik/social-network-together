@@ -9,7 +9,7 @@ class CustomDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Drawer(
       backgroundColor: Colors.white,
-      child: Container(
+      child: SafeArea(
         // margin: EdgeInsets.only(left: 20),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
