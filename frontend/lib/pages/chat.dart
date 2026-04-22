@@ -127,7 +127,14 @@ class _ChatState extends State<Chat> {
                             ),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(40),
-                              child: Image.network(_userTo['avatar']),
+                              child: Image.network(
+                                defaultTargetPlatform != TargetPlatform.android
+                                    ? _userTo['avatar']
+                                    : _userTo['avatar'].replaceAll(
+                                        'localhost',
+                                        '10.0.2.2',
+                                      ),
+                              ),
                             ),
                           ),
                           SizedBox(width: 10),

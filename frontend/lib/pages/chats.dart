@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:frontend/widgets/custom_drawer.dart';
@@ -70,17 +71,24 @@ class _ChatsState extends State<Chats> {
                               Container(
                                 height: 70,
                                 width: 70,
-                                margin: EdgeInsets.only(
-                                  bottom: 10
-                                ),
+                                margin: EdgeInsets.only(bottom: 10),
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  border: Border.all(color: Colors.black26, width: 1)
+                                  border: Border.all(
+                                    color: Colors.black26,
+                                    width: 1,
+                                  ),
                                 ),
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(70),
                                   child: Image.network(
-                                    _users[i]['avatar'],
+                                    defaultTargetPlatform !=
+                                            TargetPlatform.android
+                                        ? _users[i]['avatar']
+                                        : _users[i]['avatar'].replaceAll(
+                                            'localhost',
+                                            '10.0.2.2',
+                                          ),
                                     fit: BoxFit.cover,
                                   ),
                                 ),
@@ -90,10 +98,12 @@ class _ChatsState extends State<Chats> {
                             ],
                           ),
                         ),
-                        onTap: (){
-                          Navigator.pushNamed(context, '/chat', arguments: {
-                            'userId': _users[i]['id']
-                          });
+                        onTap: () {
+                          Navigator.pushNamed(
+                            context,
+                            '/chat',
+                            arguments: {'userId': _users[i]['id']},
+                          );
                         },
                       );
                     },

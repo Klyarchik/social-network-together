@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:frontend/widgets/alerts.dart';
@@ -66,8 +67,7 @@ class _ProfileState extends State<Profile> {
               surfaceTintColor: Colors.transparent,
             ),
             drawer: CustomDrawer(index: 0),
-            body:
-            SafeArea(
+            body: SafeArea(
               child: SizedBox(
                 child: ListView(
                   children: [
@@ -120,7 +120,14 @@ class _ProfileState extends State<Profile> {
                                                     fit: BoxFit.cover,
                                                   )
                                                 : Image.network(
-                                                    _imageSrc,
+                                                    defaultTargetPlatform !=
+                                                            TargetPlatform
+                                                                .android
+                                                        ? _imageSrc
+                                                        : _imageSrc.replaceAll(
+                                                            'localhost',
+                                                            '10.0.2.2',
+                                                          ),
                                                     fit: BoxFit.cover,
                                                   ),
                                           ),
@@ -143,7 +150,10 @@ class _ProfileState extends State<Profile> {
                                           final storage =
                                               FlutterSecureStorage();
                                           await storage.delete(key: 'token');
-                                          Navigator.pushNamed(context, '/entrance');
+                                          Navigator.pushNamed(
+                                            context,
+                                            '/entrance',
+                                          );
                                         },
                                         icon: Icon(
                                           Icons.exit_to_app,
@@ -163,7 +173,10 @@ class _ProfileState extends State<Profile> {
                                   SizedBox(height: 10),
                                   TextButton(
                                     onPressed: () {
-                                      Navigator.pushNamed(context, '/change_password');
+                                      Navigator.pushNamed(
+                                        context,
+                                        '/change_password',
+                                      );
                                     },
                                     child: Text('Изменить пароль'),
                                     style: TextButton.styleFrom(
