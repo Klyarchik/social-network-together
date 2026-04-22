@@ -142,53 +142,82 @@ class _ChatState extends State<Chat> {
                           controller: _scrollController,
                           itemCount: _messages.length,
                           itemBuilder: (context, i) {
+                            final listDateTime = _messages[i]['created_at'].split('T');
+                            final listTime = listDateTime[1].split(':');
                             return Center(
-                              child: Container(
-                                width: double.infinity,
-                                constraints: BoxConstraints(maxWidth: 700),
-                                margin: EdgeInsets.symmetric(horizontal: 20),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      _messages[i]['user_from'] == widget.userId
-                                      ? MainAxisAlignment.start
-                                      : MainAxisAlignment.end,
-                                  children: [
-                                    Flexible(
-                                      child: LayoutBuilder(
-                                        builder: (context, constrains) {
-                                          return Container(
-                                            constraints: BoxConstraints(
-                                              maxWidth:
-                                                  constrains.maxWidth * 0.8,
-                                            ),
+                              child: Column(
+                                children: [
+                                  if (i != 0)
+                                    if (_messages[i - 1]['created_at'].substring(0, 10) != _messages[i]['created_at'].substring(0, 10))
+                                      Center(
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(
+                                            vertical: 2.5,
+                                            horizontal: 10
+                                          ),
                                             decoration: BoxDecoration(
-                                              color:
-                                                  _messages[i]['user_from'] ==
-                                                      widget.userId
-                                                  ? Colors.white
-                                                  : Color.fromRGBO(
-                                                      240,
-                                                      210,
-                                                      71,
-                                                      1,
-                                                    ),
-                                              borderRadius:
-                                                  BorderRadius.circular(15),
+                                              color: Colors.black26.withAlpha(30),
+                                              borderRadius: BorderRadius.circular(15)
                                             ),
-                                            padding: EdgeInsets.symmetric(
-                                              horizontal: 30,
-                                              vertical: 10,
-                                            ),
-                                            margin: EdgeInsets.symmetric(
-                                              vertical: 5,
-                                            ),
-                                            child: Text(_messages[i]['text']),
-                                          );
-                                        },
+                                            child: Text(_messages[i]['created_at'].substring(0, 10))),
                                       ),
+                                  Container(
+                                    width: double.infinity,
+                                    constraints: BoxConstraints(maxWidth: 700),
+                                    margin: EdgeInsets.symmetric(horizontal: 20),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          _messages[i]['user_from'] == widget.userId
+                                          ? MainAxisAlignment.start
+                                          : MainAxisAlignment.end,
+                                      children: [
+                                        Flexible(
+                                          child: LayoutBuilder(
+                                            builder: (context, constrains) {
+                                              return Container(
+                                                constraints: BoxConstraints(
+                                                  maxWidth:
+                                                      constrains.maxWidth * 0.8,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  color:
+                                                      _messages[i]['user_from'] ==
+                                                          widget.userId
+                                                      ? Colors.white
+                                                      : Color.fromRGBO(
+                                                          240,
+                                                          210,
+                                                          71,
+                                                          1,
+                                                        ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(15),
+                                                ),
+                                                padding: EdgeInsets.symmetric(
+                                                  horizontal: 10,
+                                                  vertical: 5,
+                                                ),
+                                                margin: EdgeInsets.symmetric(
+                                                  vertical: 5,
+                                                  // horizontal: 30
+                                                ),
+                                                child: Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(_messages[i]['text']),
+                                                    Text('${listTime[0]}:${listTime[1]}', style: TextStyle(
+                                                      fontSize: 10
+                                                    ),)
+                                                  ],
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
                             );
                           },
