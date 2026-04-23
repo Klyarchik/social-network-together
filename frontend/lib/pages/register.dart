@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -152,6 +154,18 @@ class _RegisterState extends State<Register> {
                                                   .options
                                                   .headers['Authorization'] =
                                               'Bearer $token';
+                                          late final tokenFire;
+                                          if (defaultTargetPlatform == TargetPlatform.android) {
+                                            tokenFire = await FirebaseMessaging.instance.getToken();
+                                          } else {
+                                            tokenFire = await FirebaseMessaging.instance.getToken(
+                                              vapidKey:
+                                              'BD-s61a02CIMSZyIuPyX8wn0Nj2y72stTGt6hWQGzIeKar88yZUcXiJ_NNcbnaF2b8jZb3pNSJyARAXuqeT6ELk',
+                                            );
+                                          }
+                                          await _dio.post('/api/token/token-device', data: {
+                                            'token_device': tokenFire
+                                          });
                                           Navigator.pushNamed(context, '/profile');
                                         } on DioException catch (e) {
                                           Alerts.showError(

@@ -51,6 +51,7 @@ class _ChatState extends State<Chat> {
     channel.stream.listen((message) {
       final data = jsonDecode(message);
       if (data['type'] == 'message') {
+        print('AAAAAAA ${data['message']}');
         if (data['message']['user_from'] == widget.userId ||
             data['message']['user_to'] == widget.userId) {
           setState(() {

@@ -33,6 +33,8 @@ void main() async {
   late final tokenFire;
   if (defaultTargetPlatform == TargetPlatform.android) {
     tokenFire = await FirebaseMessaging.instance.getToken();
+  } else if (defaultTargetPlatform == TargetPlatform.iOS){
+    tokenFire = await FirebaseMessaging.instance.getAPNSToken();
   } else {
     tokenFire = await FirebaseMessaging.instance.getToken(
       vapidKey:
