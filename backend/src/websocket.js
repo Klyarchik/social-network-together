@@ -1,13 +1,12 @@
 const WebSocket = require("ws");
 const jwt = require("jsonwebtoken");
 const prisma = require("./client");
+const { sendNotification } = require("./services/firebase.notifications");
 
 const connections = {};
 
 const initWebSocket = (server) => {
   const wss = new WebSocket.Server({ server: server, path: "/chat" });
-
-  const connections = {};
 
   wss.on("connection", (ws, req) => {
     const fullUrl = new URL(`http://localhost${req.url}`);
@@ -99,6 +98,48 @@ const initWebSocket = (server) => {
         }
 
         ws.send(JSON.stringify(messageData));
+
+        //отправка уведомления получателю
+        try {
+          const senderUser = await prisma.users.findUnique({
+            where: { id: id },
+          });
+
+          if (!senderUser) {
+            return console.error(
+              `Ошибка: отправитель сообщения не найден в БД`,
+            );
+          }
+
+          const recipientUser = await prisma.users.findUnique({
+            where: { id: to },
+          });
+
+          if (!recipientUser) {
+            return console.error(`Ошибка: получатель сообщения не найден в БД`);
+          }
+
+          const title = senderUser.username;
+          const token_devices = recipientUser.token_device;
+
+          if (!token_devices || token_devices.length === 0) {
+            return console.error(
+              `У пользователя нет ни одного токена устройства`,
+            );
+          }
+
+          for (const token_device of token_devices) {
+            try {
+              await sendNotification(token_device, title, text);
+            } catch (error) {
+              console.error(`Ошибка при отправке на токен устройства ${token_device}:`, error.message);
+            }
+          }
+        } catch (error) {
+          console.error(
+            `Произошла ошибка при отправке увеломления из ws: ${error.message}`,
+          );
+        }
       } catch (error) {
         console.error("Ошибка при обработке сообщения: ", error);
         ws.send(

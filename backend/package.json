@@ -7,7 +7,7 @@
     "prisma": "prisma",
     "swagger": "node src/swagger.js",
     "swagger:watch": "nodemon --watch ./src/routes --exec \"npm run swagger\"",
-    "dev": "npx kill-port 3000 3030 && nodemon src/server.js",
+    "dev": "nodemon src/server.js",
     "ws": "nodemon src/controllers/chat.controller.js",
     "dev:swagger": "concurrently \"npm run swagger:watch\" \"npm run dev\"",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -25,6 +25,7 @@
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "firebase-admin": "^13.8.0",
     "jsonwebtoken": "^9.0.3",
     "minio": "^8.0.7",
     "multer": "^2.1.1",

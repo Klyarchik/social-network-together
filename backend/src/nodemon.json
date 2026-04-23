@@ -1,6 +1,0 @@
-{
-  "watch": ["src"],
-  "ext": "js,json",
-  "ignore": ["src/swagger-output.json"],
-  "delay": "200ms"
-}
