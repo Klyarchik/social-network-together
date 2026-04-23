@@ -82,7 +82,7 @@ const initWebSocket = (server) => {
             user_from: chatMessage.user_from,
             user_to: chatMessage.user_to,
             text: chatMessage.text,
-            createdAt: chatMessage.created_at,
+            created_at: chatMessage.created_at,
           },
         };
 
