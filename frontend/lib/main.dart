@@ -12,8 +12,9 @@ import 'package:frontend/pages/profile.dart';
 import 'package:frontend/pages/register.dart';
 import 'package:frontend/pages/chats.dart';
 import 'package:provider/provider.dart';
-
 import 'firebase_options.dart';
+import 'notification_stub.dart'
+  if (dart.library.html) 'notification_web.dart';
 
 String? token;
 
@@ -29,8 +30,16 @@ void main() async {
   final storage = FlutterSecureStorage();
   token = await storage.read(key: 'token');
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  final tokenFire = await FirebaseMessaging.instance.getToken();
-  print('fire $tokenFire');
+  late final tokenFire;
+  if (defaultTargetPlatform == TargetPlatform.android) {
+    tokenFire = await FirebaseMessaging.instance.getToken();
+  } else {
+    tokenFire = await FirebaseMessaging.instance.getToken(
+      vapidKey:
+          'BD-s61a02CIMSZyIuPyX8wn0Nj2y72stTGt6hWQGzIeKar88yZUcXiJ_NNcbnaF2b8jZb3pNSJyARAXuqeT6ELk',
+    );
+  }
+  print('fire $tokenFire AAA');
   FirebaseMessaging.instance.requestPermission(
     alert: true,
     badge: true,
@@ -54,28 +63,34 @@ void main() async {
       >()
       ?.createNotificationChannel(channel);
 
-  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+    print('MESSAGE');
     final notification = message.notification;
     final android = message.notification?.android;
 
-    // If `onMessage` is triggered with a notification, construct our own
-    // local notification to show to users using the created channel.
-    if (notification != null && android != null) {
-      flutterLocalNotificationsPlugin.show(
-        id: notification.hashCode,
-        title: notification.title,
-        body: notification.body,
-        notificationDetails: NotificationDetails(
-          android: AndroidNotificationDetails(
-            channel.id,
-            channel.name,
-            channelDescription: channel.description,
-            icon: '@mipmap/ic_launcher',
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      if (notification != null && android != null) {
+        flutterLocalNotificationsPlugin.show(
+          id: notification.hashCode,
+          title: notification.title,
+          body: notification.body,
+          notificationDetails: NotificationDetails(
+            android: AndroidNotificationDetails(
+              channel.id,
+              channel.name,
+              channelDescription: channel.description,
+              icon: '@mipmap/ic_launcher',
+            ),
           ),
-        ),
-      );
+        );
+      }
+    } else {
+      final title = message.notification?.title;
+      final body = message.notification?.body;
+      showWebNotification(title!, body!);
     }
   });
+
   if (token != null) {
     dio.options.headers['Authorization'] = 'Bearer $token';
   }
